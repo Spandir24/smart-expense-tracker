@@ -1,8 +1,11 @@
 import Navbar from "./components/Navbar";
 import Dashboard from "./components/Dashboard";
 import Transactions from "./components/Transactions";
+import { useState } from "react";
 
 function App() {
+  const [transactions, setTransactions] = useState([]);
+  
   return (
     <>
       <Navbar />
