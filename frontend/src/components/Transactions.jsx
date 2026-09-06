@@ -1,10 +1,15 @@
 import { useState } from "react";
 
-function Transactions() {
+function Transactions({ setTransactions }) {
+  //from App.jsx,that function now arrives as a prop.
 
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
   const [type, setType] = useState("income");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  };
 
   return (
     <section className="mt-10">
