@@ -9,6 +9,17 @@ function Transactions({ setTransactions }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const newTransaction = {
+      title,
+      amount,
+      type,
+    };
+
+    setTransactions((prevTransactions) => [
+      ...prevTransactions,
+      newTransaction,
+    ]);
   };
 
   return (
@@ -21,7 +32,7 @@ function Transactions({ setTransactions }) {
         </button>
       </div>
       <div className="bg-white p-6 border rounded-xl shadow-sm">
-        <form>
+        <form onSubmit={handleSubmit}>
           <div>
             <label>Title</label>
             <input
