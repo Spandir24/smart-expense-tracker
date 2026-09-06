@@ -5,6 +5,7 @@ import { useState } from "react";
 
 function App() {
   const [transactions, setTransactions] = useState([]);
+  console.log(transactions);
   
   return (
     <>
@@ -12,7 +13,11 @@ function App() {
       <div className="bg-gray-100 min-h-screen">
         <main className="max-w-6xl mx-auto px-6 py-8">
           <Dashboard />
-          <Transactions setTransactions={setTransactions} />
+          
+          <Transactions
+            transactions={transactions}
+            setTransactions={setTransactions}
+          />
         </main>
       </div>
     </>
