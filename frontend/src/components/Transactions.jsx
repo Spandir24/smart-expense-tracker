@@ -5,14 +5,12 @@ function Transactions({ transactions, setTransactions }) {
 
   console.log(transactions);
 
-
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
-  const [type, setType] = useState("income");
+  const [type, setType] = useState("");
   const [editingIndex, setEditingIndex] = useState(null);
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
-
 
   const filteredTransactions = transactions.filter((transaction) => {
     const matchesFilter = filter === "all" || transaction.type === filter;
@@ -24,54 +22,121 @@ function Transactions({ transactions, setTransactions }) {
     return matchesFilter && matchesSearch;
   });
 
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    {
-      /* to handle browser's default page re-load behaviour*/
+
+    if (!title.trim() || !amount || Number(amount) <= 0) {
+      alert("Please enter a valid title and amount");
+      return;
     }
 
-    {
-      /* building t/c object: combining all the req React states*/
-    }
-    const newTransaction = {
+    const transactionData = {
       title,
-      amount,
+      amount: Number(amount),
       type,
     };
 
-    {
-      /* modifying the t/c state variable to add a new t/c */
+    try {
+      let response;
+
+      if (editingIndex !== null) {
+        const transactionToEdit = transactions[editingIndex];
+
+        response = await fetch(
+          `http://localhost:5000/api/transactions/${transactionToEdit._id}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(transactionData),
+          },
+        );
+      } else {
+        response = await fetch("http://localhost:5000/api/transactions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(transactionData),
+        });
+      }
+
+      const savedTransaction = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          savedTransaction.message || "Transaction request failed",
+        );
+      }
+
+      if (editingIndex !== null) {
+        setTransactions((prevTransactions) =>
+          prevTransactions.map((transaction, index) =>
+            index === editingIndex ? savedTransaction : transaction,
+          ),
+        );
+      } else {
+        setTransactions((prevTransactions) => [
+          ...prevTransactions,
+          savedTransaction,
+        ]);
+      }
+
+      setTitle("");
+      setAmount("");
+      setType("");
+      setEditingIndex(null);
+    } catch (error) {
+      console.log("Error saving transaction:", error);
     }
-    if (editingIndex !== null) {
-      setTransactions((prevTransactions) =>
-        prevTransactions.map((transaction, index) =>
-          index === editingIndex ? newTransaction : transaction,
-        ),
+  };
+
+  //   {/* modifying the t/c state variable to add a new t/c */}
+  //   if (editingIndex !== null) {
+  //     setTransactions((prevTransactions) =>
+  //       prevTransactions.map((transaction, index) =>
+  //         index === editingIndex ? newTransaction : transaction,
+  //       ),
+  //     );
+  //   } else {
+  //     setTransactions((prevTransactions) => [
+  //       ...prevTransactions,
+  //       newTransaction,
+  //     ]);
+  //   }
+
+  //   {
+  //     /* To reset the form, we simply change those states back to their initial values. */
+  //   }
+  //   setTitle("");
+  //   setAmount("");
+  //   setType("");
+  //   setEditingIndex(null);
+  // };
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/transactions/${id}`,
+        {
+          method: "DELETE",
+        },
       );
-    } else {
-      setTransactions((prevTransactions) => [
-        ...prevTransactions,
-        newTransaction,
-      ]);
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to delete transaction");
+      }
+
+      setTransactions((prevTransactions) =>
+        prevTransactions.filter((transaction) => transaction._id !== id),
+      );
+    } catch (error) {
+      console.log("Error deleting transaction:", error);
     }
-
-    {
-      /* To reset the form, we simply change those states back to their initial values. */
-    }
-    setTitle("");
-    setAmount("");
-    setType("income");
-    setEditingIndex(null);
   };
-
-
-  const handleDelete = (indexToDelete) => {
-    setTransactions((prevTransactions) =>
-      prevTransactions.filter((transaction, index) => index !== indexToDelete),
-    );
-  };
-
 
   const handleEdit = (indexToEdit) => {
     const transactionToEdit = transactions[indexToEdit];
@@ -83,10 +148,6 @@ function Transactions({ transactions, setTransactions }) {
     setEditingIndex(indexToEdit);
   };
 
-
-
-
-
   return (
     <section className="mt-10">
       <div className="flex justify-between items-center mb-6">
@@ -96,6 +157,7 @@ function Transactions({ transactions, setTransactions }) {
       <div className="bg-white p-6 border rounded-xl shadow-sm">
         <form onSubmit={handleSubmit}>
           <div>
+            {/* Title input */}
             <label>Title </label>
             <input
               type="text"
@@ -105,6 +167,7 @@ function Transactions({ transactions, setTransactions }) {
             />
           </div>
 
+          {/* Amount input */}
           <div>
             <label>Amount </label>
             <input
@@ -115,6 +178,7 @@ function Transactions({ transactions, setTransactions }) {
             />
           </div>
 
+          {/* Type input */}
           <div>
             <label>Type </label>
             <select value={type} onChange={(e) => setType(e.target.value)}>
@@ -125,9 +189,26 @@ function Transactions({ transactions, setTransactions }) {
 
           <br></br>
 
+          {/* Submit button */}
           <button type="submit">
+            {" "}
             {editingIndex !== null ? "Update Transaction" : "Add Transaction"}
           </button>
+
+          {/* Cancel button */}
+          {editingIndex !== null && (
+            <button
+              type="button"
+              onClick={() => {
+                setTitle("");
+                setAmount("");
+                setType("income");
+                setEditingIndex(null);
+              }}
+            >
+              Cancel Edit
+            </button>
+          )}
         </form>
 
         <input
@@ -137,11 +218,10 @@ function Transactions({ transactions, setTransactions }) {
           onChange={(e) => setSearch(e.target.value)}
         />
 
-
         <div className="mt-6" style={{ display: "flex", gap: "10px" }}>
           <button onClick={() => setFilter("all")}>All</button>
-          <button onClick={() => setFilter("income")}>Income</button>
-          <button onClick={() => setFilter("expense")}>Expense</button>
+          <button onClick={() => setFilter("Income")}>Income</button>
+          <button onClick={() => setFilter("Expense")}>Expense</button>
         </div>
 
         <div className="mt-6">
@@ -159,7 +239,9 @@ function Transactions({ transactions, setTransactions }) {
 
                 <br></br>
 
-                <button onClick={() => handleDelete(index)}>Delete</button>
+                <button onClick={() => handleDelete(transaction._id)}>
+                  Delete
+                </button>
               </div>
             ))
           )}

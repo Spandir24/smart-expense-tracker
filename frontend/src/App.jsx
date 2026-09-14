@@ -1,11 +1,12 @@
 import Navbar from "./components/Navbar";
 import Dashboard from "./components/Dashboard";
 import Transactions from "./components/Transactions";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function App() {
   const [transactions, setTransactions] = useState([]);
-  console.log(transactions);
+  const [loading, setLoading] = useState(true);
+  // console.log(transactions);
 
 
   {/*CALCULATIONS- via normal JS variables*/}
@@ -18,6 +19,32 @@ function App() {
     .reduce((total, transaction) => total + Number(transaction.amount), 0);
 
   const balance = totalIncome - totalExpenses;
+
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/transactions")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch transactions");
+        }
+
+        return response.json();
+      })
+      .then((data) => {
+        setTransactions(data);
+      })
+      .catch((error) => {
+        console.log("Error fetching transactions:", error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+
+  if (loading) {
+    return <p>Loading transactions...</p>;
+  }
 
   
   
