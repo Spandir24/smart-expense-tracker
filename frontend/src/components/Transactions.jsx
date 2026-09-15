@@ -41,7 +41,7 @@ function Transactions({ transactions, setTransactions }) {
         const transactionToEdit = transactions[editingIndex];
 
         response = await fetch(
-          `http://localhost:5000/api/transactions/${transactionToEdit._id}`,
+          `${import.meta.env.VITE_API_URL}/api/transactions/${transactionToEdit._id}`,
           {
             method: "PATCH",
             headers: {
@@ -51,7 +51,7 @@ function Transactions({ transactions, setTransactions }) {
           },
         );
       } else {
-        response = await fetch("http://localhost:5000/api/transactions", {
+        response = await fetch(`${import.meta.env.VITE_API_URL}/api/transactions`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -94,7 +94,7 @@ function Transactions({ transactions, setTransactions }) {
   const handleDelete = async (id) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/transactions/${id}`,
+        `${import.meta.env.VITE_API_URL}/api/transactions/${id}`,
         {
           method: "DELETE",
         },
