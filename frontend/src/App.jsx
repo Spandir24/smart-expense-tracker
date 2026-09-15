@@ -49,23 +49,24 @@ function App() {
   
   
   return (
-    <>
+    <div className="min-h-screen bg-slate-50">
+      {/* App name stays outside the main content box */}
       <Navbar />
-      <div className="bg-gray-100 min-h-screen">
-        <main className="max-w-6xl mx-auto px-6 py-8">
-          <Dashboard
-            totalIncome={totalIncome}
-            totalExpenses={totalExpenses}
-            balance={balance}
-          />
 
-          <Transactions
-            transactions={transactions}
-            setTransactions={setTransactions}
-          />
-        </main>
-      </div>
-    </>
+      {/* Main content box */}
+      <main className="mx-auto mt-8 max-w-6xl rounded-2xl bg-white px-8 py-10 shadow-sm md:px-12 md:py-14">
+        <Dashboard
+          totalIncome={totalIncome}
+          totalExpenses={totalExpenses}
+          balance={balance}
+        />
+
+        <Transactions
+          transactions={transactions}
+          setTransactions={setTransactions}
+        />
+      </main>
+    </div>
   );
 }
 

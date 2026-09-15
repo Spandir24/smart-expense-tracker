@@ -1,13 +1,9 @@
 import { useState } from "react";
 
 function Transactions({ transactions, setTransactions }) {
-  //from App.jsx,that function now arrives as a prop.
-
-  console.log(transactions);
-
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
-  const [type, setType] = useState("");
+  const [type, setType] = useState("income");
   const [editingIndex, setEditingIndex] = useState(null);
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
@@ -35,6 +31,8 @@ function Transactions({ transactions, setTransactions }) {
       amount: Number(amount),
       type,
     };
+
+    console.log("Transaction data:", transactionData);
 
     try {
       let response;
@@ -85,35 +83,13 @@ function Transactions({ transactions, setTransactions }) {
 
       setTitle("");
       setAmount("");
-      setType("");
+      setType("income");
       setEditingIndex(null);
     } catch (error) {
       console.log("Error saving transaction:", error);
+      alert(error.message);
     }
   };
-
-  //   {/* modifying the t/c state variable to add a new t/c */}
-  //   if (editingIndex !== null) {
-  //     setTransactions((prevTransactions) =>
-  //       prevTransactions.map((transaction, index) =>
-  //         index === editingIndex ? newTransaction : transaction,
-  //       ),
-  //     );
-  //   } else {
-  //     setTransactions((prevTransactions) => [
-  //       ...prevTransactions,
-  //       newTransaction,
-  //     ]);
-  //   }
-
-  //   {
-  //     /* To reset the form, we simply change those states back to their initial values. */
-  //   }
-  //   setTitle("");
-  //   setAmount("");
-  //   setType("");
-  //   setEditingIndex(null);
-  // };
 
   const handleDelete = async (id) => {
     try {
@@ -144,108 +120,225 @@ function Transactions({ transactions, setTransactions }) {
     setTitle(transactionToEdit.title);
     setAmount(transactionToEdit.amount);
     setType(transactionToEdit.type);
-
     setEditingIndex(indexToEdit);
   };
 
+  const cancelEdit = () => {
+    setTitle("");
+    setAmount("");
+    setType("income");
+    setEditingIndex(null);
+  };
+
   return (
-    <section className="mt-10">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold">Transactions</h2>
+    <section className="mt-12">
+      <div className="mb-6">
+        <h2 className="text-3xl font-bold text-gray-900">Transactions</h2>
+
+        <p className="mt-1 text-sm text-gray-500">
+          Add and manage your income and expenses.
+        </p>
       </div>
 
-      <div className="bg-white p-6 border rounded-xl shadow-sm">
+      {/* Transaction form */}
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <h3 className="mb-5 text-lg font-semibold text-gray-900">
+          {editingIndex !== null ? "Edit Transaction" : "Add New Transaction"}
+        </h3>
+
         <form onSubmit={handleSubmit}>
-          <div>
-            {/* Title input */}
-            <label>Title </label>
-            <input
-              type="text"
-              placeholder=" e.g. Salary"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            {/* Title */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Title
+              </label>
+
+              <input
+                type="text"
+                placeholder="e.g. Salary"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              />
+            </div>
+
+            {/* Amount */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Amount
+              </label>
+
+              <input
+                type="number"
+                placeholder="Enter amount"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              />
+            </div>
+
+            {/* Type */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Type
+              </label>
+
+              <select
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              >
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+              </select>
+            </div>
           </div>
 
-          {/* Amount input */}
-          <div>
-            <label>Amount </label>
-            <input
-              type="number" // but the value we receive (here as input) is initially treated as a string
-              placeholder=" Enter amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
-          </div>
-
-          {/* Type input */}
-          <div>
-            <label>Type </label>
-            <select value={type} onChange={(e) => setType(e.target.value)}>
-              <option value="income">Income</option>
-              <option value="expense">Expense</option>
-            </select>
-          </div>
-
-          <br></br>
-
-          {/* Submit button */}
-          <button type="submit">
-            {" "}
-            {editingIndex !== null ? "Update Transaction" : "Add Transaction"}
-          </button>
-
-          {/* Cancel button */}
-          {editingIndex !== null && (
+          <div className="mt-5 flex flex-wrap gap-3">
             <button
-              type="button"
-              onClick={() => {
-                setTitle("");
-                setAmount("");
-                setType("income");
-                setEditingIndex(null);
-              }}
+              type="submit"
+              className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
             >
-              Cancel Edit
+              {editingIndex !== null ? "Update Transaction" : "Add Transaction"}
             </button>
-          )}
-        </form>
 
+            {editingIndex !== null && (
+              <button
+                type="button"
+                onClick={cancelEdit}
+                className="rounded-lg border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100"
+              >
+                Cancel Edit
+              </button>
+            )}
+          </div>
+        </form>
+      </div>
+
+      {/* Search and filters */}
+      <div className="mt-6 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
         <input
           type="text"
-          placeholder="Search transactions"
+          placeholder="Search transactions..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
         />
 
-        <div className="mt-6" style={{ display: "flex", gap: "10px" }}>
-          <button onClick={() => setFilter("all")}>All</button>
-          <button onClick={() => setFilter("Income")}>Income</button>
-          <button onClick={() => setFilter("Expense")}>Expense</button>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button
+            onClick={() => setFilter("all")}
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
+              filter === "all"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            All
+          </button>
+
+          <button
+            onClick={() => setFilter("income")}
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
+              filter === "income"
+                ? "bg-green-600 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Income
+          </button>
+
+          <button
+            onClick={() => setFilter("expense")}
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
+              filter === "expense"
+                ? "bg-red-600 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Expense
+          </button>
         </div>
+      </div>
 
-        <div className="mt-6">
-          {transactions.length === 0 ? (
-            <p>No transactions yet.</p>
-          ) : (
-            filteredTransactions.map((transaction, index) => (
-              <div key={index}>
-                <p>{transaction.title}</p>
-                <p>₹{transaction.amount}</p>
-                <p>{transaction.type}</p>
+      {/* Transaction list */}
+      <div className="mt-6 space-y-3">
+        {transactions.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-8 text-center">
+            <p className="font-medium text-gray-700">No transactions yet.</p>
 
-                {/*Button functionality */}
-                <button onClick={() => handleEdit(index)}>Edit</button>
+            <p className="mt-1 text-sm text-gray-500">
+              Add your first transaction using the form above.
+            </p>
+          </div>
+        ) : filteredTransactions.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-8 text-center">
+            <p className="font-medium text-gray-700">
+              No matching transactions found.
+            </p>
 
-                <br></br>
+            <p className="mt-1 text-sm text-gray-500">
+              Try changing your search or filter.
+            </p>
+          </div>
+        ) : (
+          filteredTransactions.map((transaction) => {
+            const originalIndex = transactions.findIndex(
+              (item) => item._id === transaction._id,
+            );
 
-                <button onClick={() => handleDelete(transaction._id)}>
-                  Delete
-                </button>
+            return (
+              <div
+                key={transaction._id}
+                className="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:shadow-md md:flex-row md:items-center md:justify-between"
+              >
+                <div>
+                  <p className="font-semibold text-gray-900">
+                    {transaction.title}
+                  </p>
+
+                  <span
+                    className={`mt-2 inline-block rounded-full px-3 py-1 text-xs font-medium ${
+                      transaction.type === "income"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                    }`}
+                  >
+                    {transaction.type}
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-4">
+                  <p
+                    className={`text-lg font-bold ${
+                      transaction.type === "income"
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }`}
+                  >
+                    {transaction.type === "income" ? "+" : "-"}₹
+                    {transaction.amount}
+                  </p>
+
+                  <button
+                    onClick={() => handleEdit(originalIndex)}
+                    className="rounded-lg bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-200"
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    onClick={() => handleDelete(transaction._id)}
+                    className="rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-100"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
-            ))
-          )}
-        </div>
+            );
+          })
+        )}
       </div>
     </section>
   );

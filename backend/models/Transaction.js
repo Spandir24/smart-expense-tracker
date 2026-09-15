@@ -13,7 +13,7 @@ const transactionSchema = new mongoose.Schema({
 
   type: {
     type: String,
-    enum: ["ncome", "expense"],
+    enum: ["income", "expense"],
     required: true,
   },
 });

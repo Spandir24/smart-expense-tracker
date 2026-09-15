@@ -38,6 +38,8 @@ app.post("/api/transactions", async (req, res) => {
 
     res.status(201).json(newTransaction);
   } catch (error) {
+    console.log("Create transaction error:", error.message);
+
     res.status(400).json({
       message: "Failed to create transaction",
       error: error.message,
