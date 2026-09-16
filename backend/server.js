@@ -7,7 +7,17 @@ const cors = require("cors");
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://smart-expense-tracker-frontend-gg4k.onrender.com",
+    ],
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type"],
+  })
+)
+
 app.use(express.json());
 
 mongoose
