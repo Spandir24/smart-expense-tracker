@@ -15,9 +15,10 @@ app.use(
     ],
     methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type"],
-  })
-)
-app.options("*", cors());
+  }),
+);
+
+
 app.use(express.json());
 
 mongoose
