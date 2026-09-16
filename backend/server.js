@@ -8,12 +8,14 @@ const app = express();
 
 app.use(
   cors({
-    origin: "https://smart-expense-tracker-frontend-gg4k.onrender.com",
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    origin: [
+      "http://localhost:5173",
+      "https://smart-expense-tracker-frontend-gg4k.onrender.com",
+    ],
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type"],
   }),
 );
-
 
 app.use(express.json());
 
@@ -101,6 +103,8 @@ app.patch("/api/transactions/:id", async (req, res) => {
   }
 });
 
-app.listen(5000, () => {
-  console.log("Server is running on port 5000");
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
