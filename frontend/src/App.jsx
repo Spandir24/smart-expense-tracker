@@ -22,7 +22,7 @@ function App() {
 
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/transactions")
+    fetch(`${import.meta.env.VITE_API_URL}/api/transactions`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch transactions");
