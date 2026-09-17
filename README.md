@@ -67,7 +67,7 @@ smart-expense-tracker/
 
 ## Live Demo
 
-Frontend: YOUR_FRONTEND_RENDER_URL
+Frontend: https://smart-expense-tracker-frontend-gg4k.onrender.com/
 
 Backend: https://smart-expense-tracker-backend-os2n.onrender.com
 
