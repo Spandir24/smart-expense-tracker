@@ -51,21 +51,39 @@ function Transactions({ transactions, setTransactions }) {
           },
         );
       } else {
-        response = await fetch(`${import.meta.env.VITE_API_URL}/api/transactions`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
+        response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/transactions`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(transactionData),
           },
-          body: JSON.stringify(transactionData),
-        });
+        );
       }
 
-      const savedTransaction = await response.json();
+      const responseText = await response.text();
 
       if (!response.ok) {
-        throw new Error(
-          savedTransaction.message || "Transaction request failed",
-        );
+        let errorMessage = "Transaction request failed";
+
+        try {
+          const errorData = JSON.parse(responseText);
+          errorMessage = errorData.message || errorMessage;
+        } catch {
+          errorMessage = responseText || errorMessage;
+        }
+
+        throw new Error(errorMessage);
+      }
+
+      let savedTransaction;
+
+      try {
+        savedTransaction = JSON.parse(responseText);
+      } catch {
+        throw new Error("The server returned an empty or invalid response");
       }
 
       if (editingIndex !== null) {
@@ -100,10 +118,19 @@ function Transactions({ transactions, setTransactions }) {
         },
       );
 
-      const data = await response.json();
+      const responseText = await response.text();
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to delete transaction");
+        let errorMessage = "Failed to delete transaction";
+
+        try {
+          const errorData = JSON.parse(responseText);
+          errorMessage = errorData.message || errorMessage;
+        } catch {
+          errorMessage = responseText || errorMessage;
+        }
+
+        throw new Error(errorMessage);
       }
 
       setTransactions((prevTransactions) =>

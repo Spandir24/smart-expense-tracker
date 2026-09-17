@@ -57,3 +57,19 @@ smart-expense-tracker/
 │
 └── README.md
 
+
+
+
+
+
+
+
+
+## Live Demo
+
+Frontend: YOUR_FRONTEND_RENDER_URL
+
+Backend: https://smart-expense-tracker-backend-os2n.onrender.com
+
+=> The application is deployed with a React frontend, Express backend, and MongoDB Atlas database.
+```
