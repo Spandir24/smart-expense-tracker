@@ -18,6 +18,9 @@ function Transactions({ transactions, setTransactions }) {
     return matchesFilter && matchesSearch;
   });
 
+
+
+  //ON FORM SUBMISSION (ig it includes: ADD, EDIT)
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -109,7 +112,12 @@ function Transactions({ transactions, setTransactions }) {
     }
   };
 
+
+
+  //DELETE FUNC-
   const handleDelete = async (id) => {
+
+    //First, it asks the backend to delete the transaction:
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/transactions/${id}`,
@@ -118,6 +126,8 @@ function Transactions({ transactions, setTransactions }) {
         },
       );
 
+
+      //stores the backend response messge (if sent)
       const responseText = await response.text();
 
       if (!response.ok) {
@@ -132,7 +142,9 @@ function Transactions({ transactions, setTransactions }) {
 
         throw new Error(errorMessage);
       }
+      
 
+      // Updating the react state - so that the t/c deleted by Mongo gets removed from UI too
       setTransactions((prevTransactions) =>
         prevTransactions.filter((transaction) => transaction._id !== id),
       );
@@ -141,6 +153,8 @@ function Transactions({ transactions, setTransactions }) {
     }
   };
 
+
+  //UPDATE FUNC-
   const handleEdit = (indexToEdit) => {
     const transactionToEdit = transactions[indexToEdit];
 
@@ -157,6 +171,10 @@ function Transactions({ transactions, setTransactions }) {
     setEditingIndex(null);
   };
 
+
+
+
+  //JSX
   return (
     <section className="mt-12">
       <div className="mb-6">

@@ -65,6 +65,9 @@ app.post("/api/transactions", async (req, res) => {
   }
 });
 
+
+
+//DELETE
 app.delete("/api/transactions/:id", async (req, res) => {
   try {
     const deletedTransaction = await Transaction.findByIdAndDelete(
@@ -89,6 +92,9 @@ app.delete("/api/transactions/:id", async (req, res) => {
   }
 });
 
+
+
+//UPDATE
 app.patch("/api/transactions/:id", async (req, res) => {
   try {
     const updatedTransaction = await Transaction.findByIdAndUpdate(
